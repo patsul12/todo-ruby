@@ -3,13 +3,6 @@ require './app'
 Capybara.app = Sinatra::Application
 set(:show_exceptions, false)
 
-RSpec.configure do |config|
-  config.after(:each) do
-    DB.exec("DELETE FROM lists *;")
-    DB.exec("DELETE FROM tasks *;")
-  end
-end
-
 feature 'adding a new list' do
   scenario 'allows a user to click a list to see the tasks and details for it.' do
     visit '/'
@@ -27,5 +20,17 @@ feature 'viewing all of the lists' do
     visit '/'
     click_link 'View All Lists'
     expect(page).to have_content(list.name)
+  end
+end
+
+feature 'seeing details for a single list' do
+  scenario 'allows a user to click a list to see the tasks and details for it' do
+    test_list = List.new({name: 'School Stuff'})
+    test_list.save
+    test_task = Task.new({description: "learn SQL", list_id: test_list.id})
+    test_task.save
+    visit '/lists'
+    click_link(test_list.name)
+    expect(page).to have_content(test_task.description)
   end
 end

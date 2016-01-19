@@ -5,7 +5,7 @@ require './lib/list'
 require 'pg'
 also_reload('lib/**/*.rb')
 
-DB = PG.connect({dbname: 'to_do'})
+DB = PG.connect({dbname: 'to_do_test'})
 
 get '/' do
   erb :index
@@ -25,4 +25,9 @@ end
 get '/lists' do
   @lists = List.all
   erb :lists
+end
+
+get '/lists/:id' do
+  @list = List.find(params[:id].to_i)
+  erb :list
 end

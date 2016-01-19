@@ -1,4 +1,3 @@
-require 'pry'
 class List
   attr_accessor :name
   attr_reader :id
@@ -26,5 +25,29 @@ class List
       lists << List.new({name: name, id: id})
     end
     lists
+  end
+
+  def self.find(id)
+    List.all.each do |list|
+      if list.id == id
+        return list
+      end
+    end
+  end
+
+  def tasks
+    list_tasks = []
+    tasks = DB.exec("SELECT * FROM tasks WHERE list_id = #{self.id}")
+    tasks.each do |task|
+      description = task['description']
+      list_id = task['list_id'].to_i
+      id = task['id'].to_i
+      list_tasks << Task.new({description: description, list_id: list_id, id: id})
+    end
+    list_tasks
+  end
+
+  def delete
+    DB.exec("DELETE FROM lists WHERE id = #{self.id}")
   end
 end
